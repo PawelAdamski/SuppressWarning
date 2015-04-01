@@ -14,24 +14,27 @@ public class AddAnnotation {
             Annotation a1 = annotations.get(i);
             String val = a1.text;
             boolean moreThatOne = false;
-            for (int j = i + 1; j < annotations.size() && annotations.get(j).line == a1.line; j++) {
+            int j;
+            for (j = i + 1; j < annotations.size() && annotations.get(j).line == a1.line; j++) {
                 val += "\", \"" + annotations.get(j).text;
                 moreThatOne = true;
             }
+            i = j - 1;
+            val = "\"" + val + "\"";
             if (moreThatOne) {
-                val = "{ " + val + " }";
+                val = "{" + val + "}";
             }
             distAnnon.add(new Annotation(null, val, a1.line));
 
         }
 
-        for (int i = 0; i < annotations.size(); i++) {
-            Annotation a = annotations.get(i);
-            String indent = getIndent(lines.get(a.line));
-            lines.add(a.line, indent + "@SuppressWarnings(" + a.text + ")");
-            for (int j = i + 1; j < annotations.size(); j++) {
-                if (a.line <= annotations.get(j).line) {
-                    annotations.get(j).line++;
+        for (int i = 0; i < distAnnon.size(); i++) {
+            Annotation a = distAnnon.get(i);
+            String indent = getIndent(lines.get(a.line - 1));
+            lines.add(a.line - 1, indent + "@SuppressWarnings(" + a.text + ")");
+            for (int j = i + 1; j < distAnnon.size(); j++) {
+                if (a.line <= distAnnon.get(j).line) {
+                    distAnnon.get(j).line++;
                 }
             }
         }
