@@ -10,41 +10,45 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import pl.padamski.Warning.Type;
+
 public class SuppressWarnings {
 
-	private static final String SUPPRESS_UNUSED_METHOD = "\t@SuppressWarnings(\"unused\")";
+    public static void main(String[] args) throws IOException {
+        new SuppressWarnings().foo(Paths.get("D:\\bledy2.txt"), Charset.forName("Cp1250"));
+        System.out.println("DONE");
+    }
 
-	public static void main(String[] args) throws IOException {
-		new SuppressWarnings().foo(Paths.get("C:\\blad.txt"), Charset.defaultCharset());
-	}
+    private void foo(Path path, Charset charset) throws IOException {
 
-	private void foo(Path path, Charset charset) throws IOException {
-		Stream<String> lines = Files.lines(path, charset);
-		Map<Path, List<Warning>> warnings = lines.skip(1).map(n -> new Warning(n)).filter(n -> n.type.equals(Warning.Type.UNUSED_METHOD))
-				.collect(Collectors.groupingBy(n -> n.path));
-		lines.close();
+        Stream<String> lines = Files.lines(path, charset);
+        Map<Path, List<Annotation>> annotations = lines.skip(1)
+                                                       .map(n -> new Warning(n))
+                                                       .filter(w -> w.type != Type.OTHER)
+                                                       .map(w -> w.generateAnnotation())
+                                                       .collect(Collectors.groupingBy(Annotation::getPath));
 
-		warnings.forEach((x, y) -> addAnnotations(x, y, charset));
-	}
+        lines.close();
 
-	private Object addAnnotations(Path path, List<Warning> warnings, Charset charset) {
-		try {
-			List<String> lines = Files.readAllLines(path, charset);
+        annotations.forEach((x, y) -> addAnnotations(x, y, charset));
+    }
 
-			for (int i = 0; i < warnings.size(); i++) {
-				lines.add(warnings.get(i).lineNo - 1, SUPPRESS_UNUSED_METHOD);
-				for (int j = i + 1; j < warnings.size(); j++) {
-					warnings.get(j).lineNo++;
-				}
-			}
+    private Object addAnnotations(Path path, List<Annotation> annotations, Charset charset) {
+        try {
+            List<String> lines = Files.readAllLines(path, charset);
+            lines = new AddAnnotation().addAnnotations(lines, annotations);
+            Files.write(path, lines, charset);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-			Files.write(path, lines, charset);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(0);
-		}
-		return null;
-	}
-
+    private String getIndent(String line) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < line.length() && line.charAt(i) == ' '; i++) {
+            sb.append(' ');
+        }
+        return sb.toString();
+    }
 }
