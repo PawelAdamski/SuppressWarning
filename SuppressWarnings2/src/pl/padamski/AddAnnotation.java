@@ -22,7 +22,7 @@ public class AddAnnotation {
             i = j - 1;
             val = "\"" + val + "\"";
             if (moreThatOne) {
-                val = "{" + val + "}";
+                val = "{ " + val + " }";
             }
             distAnnon.add(new Annotation(null, val, a1.line));
 

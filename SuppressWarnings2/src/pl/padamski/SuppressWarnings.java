@@ -44,11 +44,4 @@ public class SuppressWarnings {
         return null;
     }
 
-    private String getIndent(String line) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < line.length() && line.charAt(i) == ' '; i++) {
-            sb.append(' ');
-        }
-        return sb.toString();
-    }
 }

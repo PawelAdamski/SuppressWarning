@@ -10,9 +10,10 @@ public class Warning {
         UNUSED_METHOD("The method.*from the type .* is never used locally", new AddLineAbove(), "unused"),
         UNUSED_FIELD("The value of the field .* is not used",new AddLineAbove(), "unused"),
         UNUSED_LOCAL("The value of the local variable .* is not used", new AddLineAbove(), "unused"), 
-        RAW_TYPE(".* is a raw type. References to generic type .* should be parameterized", new AddToMethod(), "rawtypes"), 
+        RAW_TYPE(".* is a raw type.*", new AddToMethod(), "rawtypes"), 
         STATIC_METHOD("The static method .* from the type .* should be accessed in a static way", new AddToMethod(), "static-access"),
         DEPRECTATION("The method .* from the type .* is deprecated", new AddToMethod(), "deprecation"),
+        TYPE_SAFETY("Type safety:.*", new AddToMethod(), "unchecked"),
         OTHER("other", null, "");
      // @formatter:on
 
