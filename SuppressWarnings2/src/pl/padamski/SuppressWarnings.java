@@ -36,12 +36,12 @@ public class SuppressWarnings {
     private Object addAnnotations(Path path, List<Annotation> annotations, Charset charset) {
         try {
             List<String> lines = Files.readAllLines(path, charset);
-            lines = new AddAnnotation().addAnnotations(lines, annotations);
+            TextChanges textChanges = new AddAnnotation().addAnnotations(lines, annotations);
+            lines = new SimpleTextProcessor().process(lines, textChanges);
             Files.write(path, lines, charset);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
-
 }
