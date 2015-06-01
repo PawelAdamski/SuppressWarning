@@ -26,6 +26,7 @@ public class SuppressWarnings {
                                                        .map(n -> new Warning(n))
                                                        .filter(w -> w.type != Type.OTHER)
                                                        .map(w -> w.generateAnnotation())
+                                                       .distinct()
                                                        .collect(Collectors.groupingBy(Annotation::getPath));
 
         lines.close();
@@ -37,7 +38,7 @@ public class SuppressWarnings {
         try {
             List<String> lines = Files.readAllLines(path, charset);
             TextChanges textChanges = new AddAnnotation().addAnnotations(lines, annotations);
-            lines = new SimpleTextProcessor().process(lines, textChanges);
+            lines = new TextProcessor().process(lines, textChanges);
             Files.write(path, lines, charset);
         } catch (IOException e) {
             e.printStackTrace();
