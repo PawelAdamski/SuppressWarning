@@ -34,20 +34,38 @@ public class AddAnnotation {
         return result;
     }
 
-    private Set<String> parseAnnotation(String text) {
-        text = text.replaceAll(".*{", "");
+    public static Set<String> parseAnnotation(String text) {
+        text = text.replaceAll(" ", "");
+        text = text.replaceAll(".*\\(", "");
+        text = text.replaceAll("\\).*", "");
+        text = text.replaceAll(".*\\{", "");
         text = text.replaceAll("}.*", "");
         text = text.replaceAll("\"", "");
         String[] tab = text.split(",");
         return Sets.newHashSet(tab);
     }
 
-    private Optional<Integer> findPreviousAnnotation(int lineNumber, List<String> lines) {
-        lineNumber--;
-        while (lineNumber > 0 && lines.get(lineNumber).trim().startsWith("@")) {
-            if (lines.get(lineNumber).trim().startsWith("@SuppressWarnings")) {
+    private Optional<Integer> findPreviousAnnotation(int startLineNumber, List<String> lines) {
+        int lineNumber = startLineNumber;
+        if (lineNumber > 0) {
+            if (lines.get(lineNumber - 1).trim().startsWith("@SuppressWarnings")) {
                 return Optional.of(lineNumber);
             }
+        }
+        lineNumber--;
+        while (lineNumber > 0 && lines.get(lineNumber - 1).trim().startsWith("@")) {
+            if (lines.get(lineNumber - 1).trim().startsWith("@SuppressWarnings")) {
+                return Optional.of(lineNumber);
+            }
+            lineNumber--;
+        }
+
+        lineNumber = startLineNumber + 1;
+        while (lineNumber < lines.size() && lines.get(lineNumber - 1).trim().startsWith("@")) {
+            if (lines.get(lineNumber - 1).trim().startsWith("@SuppressWarnings")) {
+                return Optional.of(lineNumber);
+            }
+            lineNumber++;
         }
         return Optional.empty();
     }

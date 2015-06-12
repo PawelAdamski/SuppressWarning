@@ -11,9 +11,15 @@ public class Warning {
         UNUSED_FIELD("The value of the field .* is not used",new AddLineAbove(), "unused"),
         UNUSED_LOCAL("The value of the local variable .* is not used", new AddLineAbove(), "unused"), 
         RAW_TYPE(".* is a raw type.*", new AddToMethod(), "rawtypes"), 
-        STATIC_METHOD("The static method .* from the type .* should be accessed in a static way", new AddToMethod(), "static-access"),
+        STATIC_METHOD(".* should be accessed in a static way", new AddToMethod(), "static-access"),
         DEPRECTATION("The method .* from the type .* is deprecated", new AddToMethod(), "deprecation"),
         TYPE_SAFETY("Type safety:.*", new AddToMethod(), "unchecked"),
+        DEAD_CODE("Dead code",new AddToMethod(), "unused"),
+        NULL_ACESS("Null pointer access.*",new AddToMethod(),"null"),
+        RESOURCE_LEAK("Resource leak.*",new AddToMethod(),"resource"),
+        ENUM_CONSTAN("The enum constant.*",new AddToMethod(),"incomplete-switch"),
+        USE_SERIALIZABE("The serializable class  does not declare a static final.*",new AddToClass(),"serial"),
+        SERIALIZABE("The serializable class ....* does not declare a static final.*",new AddToClass(),"serial"),
         OTHER("other", null, "");
      // @formatter:on
 

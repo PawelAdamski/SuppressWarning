@@ -1,7 +1,13 @@
 package pl.padamski;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +49,18 @@ public class AddAnnotationTest {
     }
 
     @Test
+    public void addAnnotationToAnnotation() {
+        lines.clear();
+        lines.add("@SuppressWarnings(\"anon1\")");
+        lines.add("@SomeAnnotation");
+        lines.add("a");
+        annotations.add(new Annotation(null, "anon2", 3));
+        TextChanges changes = addAnnotation.addAnnotations(lines, annotations);
+        assertThat(changes.linesToReplace, hasSize(1));
+        assertThat(changes.linesToAdd, hasSize(0));
+    }
+
+    @Test
     public void addToExistingAnnotation() {
         lines.clear();
         lines.add("@SuppressWarnings(\"anon1\")");
@@ -50,7 +68,39 @@ public class AddAnnotationTest {
         lines.add("a");
         annotations.add(new Annotation(null, "anon2", 3));
         TextChanges changes = addAnnotation.addAnnotations(lines, annotations);
-        //assertThat(lines, Matchers.contains("@SuppressWarnings({\"anon1\", \"anon2\"})", "@SomeAnnotation", "a"));
+        assertThat(changes.linesToReplace, hasSize(1));
+        assertThat(changes.linesToAdd, hasSize(0));
+    }
+
+    @Test
+    public void addToExistingAnnotations() {
+        lines.clear();
+        lines.add("@SuppressWarnings({ \"unchecked\", \"unused\" })");
+        lines.add("@SomeAnnotation");
+        lines.add("a");
+        annotations.add(new Annotation(null, "anon2", 3));
+        TextChanges changes = addAnnotation.addAnnotations(lines, annotations);
+        assertThat(changes.linesToReplace, hasSize(1));
+        assertThat(changes.linesToAdd, hasSize(0));
+        Set<String> annons = AddAnnotation.parseAnnotation(changes.linesToReplace.get(0).text);
+        assertThat(annons, containsInAnyOrder("anon2", "unchecked", "unused"));
+        assertThat(annons, hasSize(3));
+    }
+
+    @Test
+    public void addToExistingAnnotationsForward() {
+        lines.clear();
+        lines.add("@SomeAnnotaion");
+        lines.add("@SuppressWarnings({ \"unchecked\", \"unused\" })");
+        lines.add("@SomeAnnotation");
+        lines.add("a");
+        annotations.add(new Annotation(null, "anon2", 1));
+        TextChanges changes = addAnnotation.addAnnotations(lines, annotations);
+        assertThat(changes.linesToReplace, hasSize(1));
+        assertThat(changes.linesToAdd, hasSize(0));
+        Set<String> annons = AddAnnotation.parseAnnotation(changes.linesToReplace.get(0).text);
+        assertThat(annons, containsInAnyOrder("anon2", "unchecked", "unused"));
+        assertThat(annons, hasSize(3));
     }
 
     @Test
@@ -61,6 +111,8 @@ public class AddAnnotationTest {
         lines.add("a");
         annotations.add(new Annotation(null, "anon1", 3));
         TextChanges changes = addAnnotation.addAnnotations(lines, annotations);
-        //assertThat(lines, Matchers.contains("@SuppressWarnings({\"anon1\"})", "@SomeAnnotation", "a"));
+        Set<String> annon = AddAnnotation.parseAnnotation(changes.linesToReplace.get(0).text);
+        assertThat(annon, contains("anon1"));
+        assertThat(annon, hasSize(1));
     }
 }

@@ -36,6 +36,7 @@ public class SuppressWarnings {
 
     private Object addAnnotations(Path path, List<Annotation> annotations, Charset charset) {
         try {
+            System.out.println(path);
             List<String> lines = Files.readAllLines(path, charset);
             TextChanges textChanges = new AddAnnotation().addAnnotations(lines, annotations);
             lines = new TextProcessor().process(lines, textChanges);

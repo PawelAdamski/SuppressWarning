@@ -30,7 +30,7 @@ public class AddToMethod implements FindAnnotationLocation {
         return visitor.getBeginLine();
     }
 
-    protected CompilationUnit getCompilationUnit(Path p) {
+    protected static CompilationUnit getCompilationUnit(Path p) {
         if (cache.containsKey(p)) {
             return cache.get(p);
         }
@@ -49,7 +49,7 @@ public class AddToMethod implements FindAnnotationLocation {
 }
 
 
-class MethodVisitor extends VoidVisitorAdapter {
+class MethodVisitor extends VoidVisitorAdapter<Object> {
 
     private int beginLine;
 
